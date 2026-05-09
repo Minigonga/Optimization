@@ -87,4 +87,115 @@
         <= 0.10 * productAnnualDemand["Mini PC"]
         + productAnnualDemand["Mini PC"] * (1 - ProductDeliverFromSupplier["UPS 1 kVA"]["Supplier Gamma"]);
 }
- 
+
+// ======================================================
+// RESULTS
+// ======================================================
+
+execute {
+
+   writeln("\n========== SOLUTION ==========\n");
+
+   writeln("OBJECTIVE VALUE = ", cplex.getObjValue());
+
+   // --------------------------------------------------
+   // Cost breakdown
+   // --------------------------------------------------
+
+   var adminCost = 0;
+   var coordCost = 0;
+   var warehouseCost = 0;
+   var purchasingCost = 0;
+
+   for(var j in suppliers) {
+      adminCost += fixedAdminCost * UsedSuppliers[j];
+      warehouseCost += warehouseCostPerSqm * quantityOfAreaPerSupplier[j];
+   }
+
+   for(var i in products) {
+      for(var j in suppliers) {
+
+         coordCost +=
+            coordinationCost * ProductDeliverFromSupplier[i][j];
+
+         purchasingCost +=
+            productPricePerSupplier[i][j] *
+            quantityOfProductFromSupplier[i][j];
+      }
+   }
+
+   writeln("\n--- COST BREAKDOWN ---");
+
+   writeln("Administrative Cost = ", adminCost);
+   writeln("Coordination Cost   = ", coordCost);
+   writeln("Warehouse Cost      = ", warehouseCost);
+   writeln("Purchasing Cost     = ", purchasingCost);
+
+   // --------------------------------------------------
+   // KPI SUMMARY
+   // --------------------------------------------------
+
+   var numSuppliers = 0;
+   var numRelationships = 0;
+   var totalWarehouseArea = 0;
+
+   for(var j in suppliers) {
+
+      numSuppliers += UsedSuppliers[j];
+
+      totalWarehouseArea +=
+         quantityOfAreaPerSupplier[j];
+   }
+
+   for(var i in products) {
+      for(var j in suppliers) {
+
+         numRelationships +=
+            ProductDeliverFromSupplier[i][j];
+      }
+   }
+
+   writeln("\n--- KPI SUMMARY ---");
+
+   writeln("Selected Suppliers      = ", numSuppliers);
+   writeln("Active Relationships    = ", numRelationships);
+   writeln("Reserved Warehouse Area = ", totalWarehouseArea);
+
+   // --------------------------------------------------
+   // Supplier usage
+   // --------------------------------------------------
+
+   writeln("\n--- SELECTED SUPPLIERS ---");
+
+   for(var j in suppliers) {
+
+      if(UsedSuppliers[j] > 0.5) {
+
+         writeln(j);
+      }
+   }
+
+   // --------------------------------------------------
+   // Product allocations
+   // --------------------------------------------------
+
+   writeln("\n--- PRODUCT ALLOCATIONS ---");
+
+   for(var i in products) {
+
+      writeln("\nProduct: ", i);
+
+      for(var j in suppliers) {
+
+         if(quantityOfProductFromSupplier[i][j] > 0.001) {
+
+            writeln(
+               "   ",
+               j,
+               " -> ",
+               quantityOfProductFromSupplier[i][j]
+            );
+         }
+      }
+   }
+} 
