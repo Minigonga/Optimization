@@ -93,7 +93,185 @@
 // ======================================================
 
 execute {
-
+  
+	// --------------------------------------------------
+	// Parameters checks
+	// --------------------------------------------------
+	
+	writeln("\n========== PARAMETER CHECKS ==========\n");
+	
+	// --------------------------------------------------
+	// Warehouse utilization
+	// --------------------------------------------------
+	
+	var totalReservedArea = 0;
+	
+	for(var j in suppliers)
+	   totalReservedArea += quantityOfAreaPerSupplier[j];
+	
+	writeln("\n--- WAREHOUSE CAPACITY ---");
+	
+	writeln("Warehouse Limit       = 4.4");
+	writeln("Reserved Area         = ", totalReservedArea);
+	writeln("Warehouse Slack       = ", 4.4 - totalReservedArea);
+	
+	writeln(
+	   "Warehouse Utilization = ",
+	   (totalReservedArea / 4.4) * 100,
+	   "%"
+	);
+	
+	// --------------------------------------------------
+	// Supplier capacity utilization
+	// --------------------------------------------------
+	
+	writeln("\n--- SUPPLIER CAPACITY UTILIZATION ---");
+	
+	for(var j in suppliers) {
+	
+	   var usedArea = 0;
+	
+	   for(var i in products)
+	      usedArea +=
+	         productUnitArea[i] *
+	         quantityOfProductFromSupplier[i][j];
+	
+	   writeln(
+	      j,
+	      " | Used = ",
+	      usedArea,
+	      " / Capacity = ",
+	      supplierArea[j],
+	      " | Slack = ",
+	      supplierArea[j] - usedArea,
+	      " | Utilization = ",
+	      (usedArea / supplierArea[j]) * 100,
+	      "%"
+	   );
+	}
+	
+	// --------------------------------------------------
+	// Product price spread analysis
+	// --------------------------------------------------
+	
+	writeln("\n--- PRODUCT PRICE SPREAD ANALYSIS ---");
+	
+	for(var i in products) {
+	
+	   var minPrice = 1e9;
+	   var maxPrice = 0;
+	   var bestSupplier = "";
+	
+	   for(var j in suppliers) {
+	
+	      if(productPricePerSupplier[i][j] < minPrice) {
+	
+	         minPrice = productPricePerSupplier[i][j];
+	         bestSupplier = j;
+	      }
+	
+	      if(productPricePerSupplier[i][j] > maxPrice)
+	         maxPrice = productPricePerSupplier[i][j];
+	   }
+	
+	   writeln(
+	      i,
+	      " | Cheapest Supplier = ",
+	      bestSupplier,
+	      " | Min Price = ",
+	      minPrice,
+	      " | Max Price = ",
+	      maxPrice,
+	      " | Spread = ",
+	      maxPrice - minPrice
+	   );
+	}
+	
+	// --------------------------------------------------
+	// Relationship pressure
+	// --------------------------------------------------
+	
+	writeln("\n--- RELATIONSHIP PRESSURE ---");
+	
+	var totalRelationships = 0;
+	
+	for(var i in products)
+	   for(var j in suppliers)
+	      totalRelationships += ProductDeliverFromSupplier[i][j];
+	
+	writeln(
+	   "Active Relationships = ",
+	   totalRelationships
+	);
+	
+	writeln(
+	   "Maximum Possible Relationships = ",
+	   products.size * 3
+	);
+	
+	writeln(
+	   "Relationship Saturation = ",
+	   (totalRelationships / (products.size * 3)) * 100,
+	   "%"
+	);
+	
+	// --------------------------------------------------
+	// Supplier concentration
+	// --------------------------------------------------
+	
+	writeln("\n--- SUPPLIER CONCENTRATION ---");
+	
+	for(var j in suppliers) {
+	
+	   var totalUnits = 0;
+	
+	   for(var i in products)
+	      totalUnits += quantityOfProductFromSupplier[i][j];
+	
+	   writeln(
+	      j,
+	      " | Total Units Assigned = ",
+	      totalUnits
+	   );
+	}
+	
+	// --------------------------------------------------
+	// Economic interpretation
+	// --------------------------------------------------
+	
+	writeln("\n--- ECONOMIC INTERPRETATION ---");
+	
+	if(totalReservedArea > 4.2)
+	   writeln(
+	      "Warehouse capacity is tight -> warehouse limit is a strong candidate for scenario analysis."
+	   );
+	
+	for(var j in suppliers) {
+	
+	   var usedArea = 0;
+	
+	   for(var i in products)
+	      usedArea +=
+	         productUnitArea[i] *
+	         quantityOfProductFromSupplier[i][j];
+	
+	   if((usedArea / supplierArea[j]) > 0.9)
+	      writeln(
+	         j,
+	         " operates near full capacity -> supplier capacity is economically important."
+	      );
+	}
+	
+	if(totalRelationships > products.size * 1.5)
+	   writeln(
+	      "Coordination structure is dense -> coordination cost is highly influential."
+	   );
+  
+  
+   // --------------------------------------------------
+   // Price analysis
+   // --------------------------------------------------
+   	
    writeln("\n========== SOLUTION ==========\n");
 
    writeln("OBJECTIVE VALUE = ", cplex.getObjValue());

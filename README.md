@@ -1,5 +1,9 @@
 # Optimization
 
+## B
+
+
+
 ## C
 
 The hard constraint the we made softer was the: 
@@ -42,4 +46,5 @@ For the penalization to be applied in the objective function we also need to cha
 
 ## AI
 
-Used to get a print that made the results easy to read
+- Used to get a print that made the results easy to read
+- Parameters check to know the best to change
