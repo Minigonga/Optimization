@@ -21,3 +21,6 @@
  fixedAdminCost = 1500;
  coordinationCost = 700;
  warehouseCostPerSqm = 300;
+ maxSuppliers = 4;
+ maxNumberOfSuppliersPerProduct = 3;
+ warehouseArea = 4.4;

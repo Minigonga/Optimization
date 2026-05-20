@@ -17,7 +17,9 @@
  int fixedAdminCost = ...;
  int coordinationCost = ...;
  int warehouseCostPerSqm = ...;
- 
+ int maxSuppliers = ...;
+ int maxNumberOfSuppliersPerProduct = ...;
+ float warehouseArea = ...;
  
  // Decision variables
  dvar int+ quantityOfProductFromSupplier[products][suppliers];
@@ -49,11 +51,11 @@
     // R3 – At most 3 suppliers per product
     forall(i in products)
         ctMaxSuppliersPerProduct:
-        sum(j in suppliers) ProductDeliverFromSupplier[i][j] <= 3;
+        sum(j in suppliers) ProductDeliverFromSupplier[i][j] <= maxNumberOfSuppliersPerProduct;
 
     // R4 – At most 4 suppliers in total
     ctMaxSuppliers:
-    sum(j in suppliers) UsedSuppliers[j] <= 4;
+    sum(j in suppliers) UsedSuppliers[j] <= maxSuppliers;
 
     // R5 – Link y_ij and z_j: if a product-supplier relationship is active, the supplier is selected
     forall(i in products, j in suppliers)
@@ -73,7 +75,7 @@
 
     // R8 – Total reserved warehouse area cannot exceed hub limit
     ctMaxWarehouseArea:
-    sum(j in suppliers) quantityOfAreaPerSupplier[j] <= 4.4;
+    sum(j in suppliers) quantityOfAreaPerSupplier[j] <= warehouseArea;
 
     // R9 – Conditional constraint: if Gamma supplies UPS 1 kVA,
     //      then Gamma supplies at most 25% of Access Switch and 10% of Mini PC
@@ -111,13 +113,13 @@ execute {
 	
 	writeln("\n--- WAREHOUSE CAPACITY ---");
 	
-	writeln("Warehouse Limit       = 4.4");
+	writeln("Warehouse Limit       = ", warehouseArea);
 	writeln("Reserved Area         = ", totalReservedArea);
-	writeln("Warehouse Slack       = ", 4.4 - totalReservedArea);
+	writeln("Warehouse Slack       = ", warehouseArea - totalReservedArea);
 	
 	writeln(
 	   "Warehouse Utilization = ",
-	   (totalReservedArea / 4.4) * 100,
+	   (totalReservedArea / warehouseArea) * 100,
 	   "%"
 	);
 	
@@ -206,12 +208,12 @@ execute {
 	
 	writeln(
 	   "Maximum Possible Relationships = ",
-	   products.size * 3
+	   products.size * maxNumberOfSuppliersPerProduct
 	);
 	
 	writeln(
 	   "Relationship Saturation = ",
-	   (totalRelationships / (products.size * 3)) * 100,
+	   (totalRelationships / (products.size * maxNumberOfSuppliersPerProduct)) * 100,
 	   "%"
 	);
 	
@@ -235,38 +237,6 @@ execute {
 	   );
 	}
 	
-	// --------------------------------------------------
-	// Economic interpretation
-	// --------------------------------------------------
-	
-	writeln("\n--- ECONOMIC INTERPRETATION ---");
-	
-	if(totalReservedArea > 4.2)
-	   writeln(
-	      "Warehouse capacity is tight -> warehouse limit is a strong candidate for scenario analysis."
-	   );
-	
-	for(var j in suppliers) {
-	
-	   var usedArea = 0;
-	
-	   for(var i in products)
-	      usedArea +=
-	         productUnitArea[i] *
-	         quantityOfProductFromSupplier[i][j];
-	
-	   if((usedArea / supplierArea[j]) > 0.9)
-	      writeln(
-	         j,
-	         " operates near full capacity -> supplier capacity is economically important."
-	      );
-	}
-	
-	if(totalRelationships > products.size * 1.5)
-	   writeln(
-	      "Coordination structure is dense -> coordination cost is highly influential."
-	   );
-  
   
    // --------------------------------------------------
    // Price analysis
