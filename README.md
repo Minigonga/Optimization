@@ -36,9 +36,17 @@ The epsilon capacity is increased to 32m^2.
 
 In this case the cost of everything will be 204388. The thing that we didn't predict was that the capacity wouldn't be used fully, probably because epsilon buys the stock of every product and the other products that will be bought from other suppliers won't be good to buy from epsilon. With this in mind probably with more capacity on epsilon that fully covers the capacity of another product it will use that capacity.
 
+#### Scenario 5 (complete products stopped being bought from other suppliers to be bought by epsilon)
+
+The epsilon capacity is increased to 40m^2.
+
+In this case the cost of everything will be 203828. It is an unrealistic scenario because there is a lot of capacity more capacity then what was initially agreed, but if a scenario like this would happen, products from other suppliers in the initial cases would start being bought from epsilon, in this case it would be the Acess Switch product that would be fully bought.
+
+### 
+
 ## C
 
-The hard constraint the we made softer was the: 
+The hard constraint that we made softer was the: 
 ```
     forall(j in suppliers)
         ctSupplierCapacity:
@@ -79,4 +87,4 @@ For the penalization to be applied in the objective function we also need to cha
 ## AI
 
 - Used to get a print that made the results easy to read
-- Parameters check to know the best to change
+- Parameters check to know the best to change on part B
