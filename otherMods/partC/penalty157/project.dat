@@ -1,0 +1,27 @@
+/*********************************************
+ * OPL 22.1.2.0 Data
+ * Author: minig
+ * Creation Date: 08/05/2026 at 03:12:58
+ *********************************************/
+
+ products = {"Enterprise Router", "Access Switch", "Wi-Fi Access Point", "IP Camera", "UPS 1 kVA", "Mini PC"};
+ suppliers = {"Supplier Alpha", "Supplier Beta", "Supplier Gamma", "Supplier Delta", "Supplier Epsilon"};
+ 
+ productPricePerSupplier = [[470, 455, 462, 480, 468], 
+                             [320, 332, 315, 325, 318], 
+                             [118, 121, 125, 116, 119], 
+                             [92, 89, 94, 91, 87],
+                             [410, 395, 380, 402, 415], 
+                             [510, 522, 500, 508, 495]];
+ 
+ productAnnualDemand = [120, 100, 180, 160, 70, 90];
+ productUnitArea = [0.12, 0.10, 0.06, 0.08, 0.30, 0.18];
+ supplierArea = [24.0, 23.0, 22.5, 20.5, 23.5];
+ 
+ fixedAdminCost = 1500;
+ coordinationCost = 700;
+ warehouseCostPerSqm = 300;
+ 
+ //Penalty
+ 
+ supplierOverflowPenalty = 157;

@@ -81,8 +81,31 @@ For the penalization to be applied in the objective function we also need to cha
 ```
 
 ### Experiments
+! All lists follow the supplier order given in the PDF.
+#### All Penalty 50
 
+Result: [0,4.2,0,0,13.5]
+This is a low penalty, so taking it is worthwhile. Using the extra area avoids the need to create new supplier-product relationships, and it allows all products to be bought from the cheapest supplier.
 
+#### All Penalty 157
+
+Result: [0,0,0,0,0]
+This is the lowest penalty that does not make using the penalty worthwhile.
+
+#### Different Penalty [80, 100, 90, 90, 100]
+
+Result: [0,4.2,0,0,2.7]
+This is a normal case where the penalty is neither especially good nor especially bad for any supplier. Having different penalty values for each supplier is useful because each supplier can have a different agreement.
+
+#### Different Penalty [999999, 999999, 999999, 999999, 100]
+
+Result: [0,0,0,0,5.5]
+This is a case where we can only reach an agreement with supplier epsilon.
+
+#### Different Penalty [100, 160, 100, 100, 160]
+
+Result: [0,0,0,3.1,2.7]
+This is a case where supplier beta's agreement cost becomes high enough that it is no longer worth using the penalty with them, so the model starts using supplier delta instead. Supplier epsilon also has a high penalty, but since buying from them is still very advantageous, the penalty is still used in a smaller amount.
 
 ## AI
 
