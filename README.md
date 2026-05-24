@@ -2,75 +2,120 @@
 
 ## B
 
-### Supplier Epsilon Capacity
+### Supplier Epsilon capacity
 
-This an important choice the problem because all the capacity from supplier epsilon is being used as it can be seen in the parameter check
+The capacity of supplier Epsilon is an important parameter because the parameter check shows it is nearly fully used:
 ```
 Supplier Epsilon | Used = 23.48 / Capacity = 23.5 | Slack = 0.02 | Utilization = 99.914893617%
 ```
-This indicates that it is a highly restrictive parameter.
+This indicates Epsilon is a binding (restrictive) capacity in the baseline instance.
 
-Since it is being completely used we can assume that it is the best option doing that lowering the capacity it will affect negatively the objective function (it will have a bigger cost) and if the capacity increases it will affect it positively. There will be a value where the epsilon supplier will stop being used because with the supplier and other 3 it won't be enough to get all the products needed so it wil be necessary to use the supplier that in the normal scenario is not used.
+Since Epsilon is fully utilized in the baseline, reducing its capacity will typically increase total cost (more expensive substitutions), while increasing its capacity tends to reduce cost until another constraint becomes binding. There will be a threshold where Epsilon is no longer selected because the combination of 4 suppliers with Epsilon will not be able to cover all the capacity for the demanded products.
 
-#### Scenario 1 (capacity slightly lower)
+#### Scenario 1 — Epsilon capacity = 22 m^2 (slightly lower)
 
-The epsilon capacity is reduced to 22m^2.
+Total cost: 205264 (higher than baseline). The capacity shortfall is redistributed across the other suppliers; Epsilon remains fully used.
 
-In this case the cost of everything will be 205264 that is higher then what we had previously as we predicted before. The area lost is redistributed by the rest of the suppliers and the capacity of epsilon is still being used to its fullest.
+#### Scenario 2 — Epsilon capacity = 16 m^2 (reduced enough to drop Epsilon)
 
-#### Scenario 2 (capacity lower that the supplier stops being used)
+Total cost: 206684 (noticeably higher). Epsilon is no longer used and a less cost-effective supplier is used instead, increasing total cost.
 
-The epsilon capacity is reduced to 16m^2.
+#### Scenario 3 — Epsilon capacity = 26 m^2 (slightly higher)
 
-In this case the cost of everything will be 206684 that is a big difference to the small difference we had before. That occurs because the supplier stops being used as we predicted and we start using a supplier that isn't as worth as the epsilon.
+Total cost: 205164. Other suppliers still use some capacity even though Epsilon increased; the marginal benefit is small.
 
-#### Scenario 3 (capacity slightly higher)
+#### Scenario 4 — Epsilon capacity = 32 m^2 (larger increase)
 
-The epsilon capacity is increased to 26m^2.
+Total cost: 204388. Epsilon is no longer fully used — other products are not always optimal to source from Epsilon even when it has spare capacity.
 
-In this case the cost of everything will be 205164 that is what we predicted. Some of the capacity from other suppliers to use the full capacity of epsilon even tho it increased.
+#### Scenario 5 — Epsilon capacity = 40 m^2 (unrealistic large increase)
 
-#### Scenario 4 (capacity higher enough to stop epsilon of being used fully)
+Total cost: 203828. This unrealistic scenario, because the capacity is way higher than what we had, shows that, with large extra capacity, many products shift to Epsilon (e.g., `Access Switch` is fully sourced from Epsilon), reducing total cost further.
 
-The epsilon capacity is increased to 32m^2.
+### Warehouse area
 
-In this case the cost of everything will be 204388. The thing that we didn't predict was that the capacity wouldn't be used fully, probably because epsilon buys the stock of every product and the other products that will be bought from other suppliers won't be good to buy from epsilon. With this in mind probably with more capacity on epsilon that fully covers the capacity of another product it will use that capacity.
+There is no feasible solution when the total warehouse area is below 4.26.
 
-#### Scenario 5 (complete products stopped being bought from other suppliers to be bought by epsilon)
+### Max suppliers (changing the limit)
 
-The epsilon capacity is increased to 40m^2.
+If the limit on selected suppliers is removed, the optimal solution could improve if using all five suppliers is cheaper than restricting to four. If not, the solution remains unchanged. If the limit is tightened, feasibility can be lost because supplier capacities may be insufficient.
 
-In this case the cost of everything will be 203828. It is an unrealistic scenario because there is a lot of capacity more capacity then what was initially agreed, but if a scenario like this would happen, products from other suppliers in the initial cases would start being bought from epsilon, in this case it would be the Acess Switch product that would be fully bought.
+#### Scenario 1 — Allow all suppliers
 
-### 
+Removing the `maxSuppliers` limit did not change the optimal solution in the baseline: it is still not beneficial to include Supplier Delta because its fixed/relationship costs and prices keep it out of the optimal mix.
+
+#### Scenario 2 — Allow all suppliers and lower fixed admin cost
+
+Example: `fixedAdminCost = 350` and `coordinationCost = 320` (unrealistic). In this case all suppliers become used; Supplier Delta supplies the Wi‑Fi Access Point.
+
+#### Scenario 3 — `maxSuppliers = 3`
+
+No feasible solution under this restriction: no combination of three suppliers has sufficient capacity to satisfy all demand.
+
+### Supplier–product relationship cost
+
+The `coordinationCost` (supplier–product relation) influences whether it is worth opening additional relationships. In the baseline, some products are split across two suppliers because of capacity limits rather than coordination cost.
+
+#### Scenario 1 — `coordinationCost = 350`
+
+The optimal solution is unchanged: existing relationships already reflect best-price sourcing given capacities.
+
+#### Scenario 2 — `coordinationCost = 1200`
+
+The optimal solution is still unchanged because the model is already at the minimum number of relationships required by capacity.
+
+#### Scenario 3 — `Epsilon capacity = 32`
+
+With more space in Epsilon (same as Epsilon capacity scenario 4), IP Camera demand is fully sourced from Epsilon and one supplier–product relationship is avoided.
+
+### Enterprise Router price
+
+The Enterprise Router has a high impact on total purchasing cost because of its demand and price spread. If the price ordering stays the same (Beta remains relatively cheaper than others), allocations remain unchanged. If Delta becomes cheaper than Beta by a sufficient margin, allocations may switch, but the change must compensate for any other products currently sourced from Beta (for example, IP Camera).
+
+Even when the supplier for Enterprise Router changes, the model typically continues to source another product from that supplier due to capacity and the four-supplier limit. Enterprise Router total area is 14.4 m^2, so its direct effect on supplier capacity is limited.
+
+#### Scenario 1 — All Enterprise Router prices reduced by 5 units: `[465, 450, 457, 475, 463]`
+
+Solution: same allocation as baseline, with a lower total cost.
+
+#### Scenario 2 — Delta slightly cheaper than Beta for Enterprise Router: `[470, 455, 462, 454, 468]`
+
+Solution: allocations unchanged because Beta remains cost-effective when considering its other products (e.g., IP Camera).
+
+#### Scenario 3 — Delta reasonably cheaper than Beta for Enterprise Router: `[470, 455, 462, 450, 468]`
+
+Solution: some products previously bought from Beta shift to Delta, since the Enterprise Router price advantage compensates the IP Camera sourcing difference.
+
+#### Scenario 4 — Beta price increases substantially: `[470, 475, 462, 450, 468]`
+
+Solution: allocations change — Gamma may supply the Enterprise Router, Beta shifts to supplying UPS 1 kVA, IP Cameras move to Epsilon, and the Mini PC may be split between Gamma and Epsilon. Capacity interactions limit perfect consolidation.
 
 ## C
 
-The hard constraint that we made softer was the: 
+We softened the supplier capacity constraint:
 ```
     forall(j in suppliers)
         ctSupplierCapacity:
         sum(i in products) productUnitArea[i] * quantityOfProductFromSupplier[i][j] <= supplierArea[j];
 ```
 
-This constraint represents a real limit that is the limited capacity of area assigned to a supplier. The capacity could be bigger if we paid more money to the supplier, for example we could have an agreement of a certain amount for m^2 more than the capacity agreed.
+This constraint represents each supplier's agreed capacity. In practice, a supplier could agree to provide additional area for a penalty.
 
-For that we replaced the constraint for:
+We replaced the hard constraint with a softened version:
 ```    
     forall(j in suppliers)
         ctSupplierCapacity:
         sum(i in products) productUnitArea[i] * quantityOfProductFromSupplier[i][j] <= supplierArea[j] + supplierOverflow[j];
 ```
 
-SupplierOverflow is a new decision varialbe that is a list of floats that have the capacity passed from the capacity agreed. We also added a parameter (supplierOverflowPenalty) that can be adjusted that will be the penalty.
+`supplierOverflow` is a decision variable (a vector of floats) that allows exceeding agreed capacity. We introduced a penalty parameter `supplierOverflowPenalty` to charge for overflow:
 
 ```
 float supplierOverflowPenalty = ...;
 dvar float supplierOverflow[suppliers];
 ```
 
-For the penalization to be applied in the objective function we also need to change the objective function:
-
+The objective is adjusted to penalize overflow:
 ```
  minimize
     sum(j in suppliers) fixedAdminCost * UsedSuppliers[j]
@@ -85,27 +130,27 @@ For the penalization to be applied in the objective function we also need to cha
 #### All Penalty 50
 
 Result: [0,4.2,0,0,13.5]
-This is a low penalty, so taking it is worthwhile. Using the extra area avoids the need to create new supplier-product relationships, and it allows all products to be bought from the cheapest supplier.
+This is a low penalty, so taking it is worthwhile. Using the extra area avoids the need to create new supplier-product relationships and allows many products to be bought from the cheapest supplier.
 
 #### All Penalty 157
 
 Result: [0,0,0,0,0]
-This is the lowest penalty that does not make using the penalty worthwhile.
+This is the lowest penalty at which using the overflow is no longer worthwhile.
 
 #### Different Penalty [80, 100, 90, 90, 100]
 
 Result: [0,4.2,0,0,2.7]
-This is a normal case where the penalty is neither especially good nor especially bad for any supplier. Having different penalty values for each supplier is useful because each supplier can have a different agreement.
+This is a typical case where penalties vary across suppliers and none are extreme. A per-supplier penalty vector makes sense because agreements often differ by supplier.
 
 #### Different Penalty [999999, 999999, 999999, 999999, 100]
 
 Result: [0,0,0,0,5.5]
-This is a case where we can only reach an agreement with supplier epsilon.
+This forces overflow to be used only for Supplier Epsilon (only Epsilon has a reasonable penalty).
 
 #### Different Penalty [100, 160, 100, 100, 160]
 
 Result: [0,0,0,3.1,2.7]
-This is a case where supplier beta's agreement cost becomes high enough that it is no longer worth using the penalty with them, so the model starts using supplier delta instead. Supplier epsilon also has a high penalty, but since buying from them is still very advantageous, the penalty is still used in a smaller amount.
+Here, Beta's overflow penalty is high enough that it is no longer used; Delta and Epsilon are used instead, with Epsilon still supplying some overflow because it remains cost-effective.
 
 ## AI
 

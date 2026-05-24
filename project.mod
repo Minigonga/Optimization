@@ -122,6 +122,15 @@ execute {
 	   (totalReservedArea / warehouseArea) * 100,
 	   "%"
 	);
+
+    // --------------------------------------------------
+    // Product capacity requirements (unit area * annual demand)
+    // --------------------------------------------------
+    writeln("\n--- PRODUCT CAPACITY REQUIREMENTS ---");
+    for(var i in products) {
+       var requiredArea = productUnitArea[i] * productAnnualDemand[i];
+       writeln(i, " | Required Area = ", requiredArea);
+    }
 	
 	// --------------------------------------------------
 	// Supplier capacity utilization
