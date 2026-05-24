@@ -24,4 +24,4 @@
  
  //Penalty
  
- supplierOverflowPenalty = 100;
+ supplierOverflowPenalty = 200;
